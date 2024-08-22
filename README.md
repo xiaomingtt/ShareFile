@@ -85,7 +85,7 @@ Only supported on Windows operating systems. Verified successfully on Windows 7 
  
 （3）、回车确认命令并等待滚屏结束。
 
- ![Screenshot](sharefile.files/image014.png)
+ ![Screenshot](sharefile.files/image014.jpg)
  
 （4）、参数中添加的文件会被自动打包并生成下载链接，链接会自动复制到剪贴板，分享此链接，即可通过浏览器访问下载打包后的文件。
 
@@ -100,7 +100,7 @@ Only supported on Windows operating systems. Verified successfully on Windows 7 
     
 2、等待滚屏结束。
 
- ![Screenshot](sharefile.files/image014.png)
+ ![Screenshot](sharefile.files/image014.jpg)
  
 3、形成一个文件接收链接并自动复制到剪贴板。将此链接发送给需要发送文件的人员。
 
