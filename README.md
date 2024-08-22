@@ -7,17 +7,19 @@ Only supported on Windows operating systems. Verified successfully on Windows 7 
 
 
 （一）、安装
+
 1、浏览器访问“ https://github.com/xiaomingtt/ShareFile/releases ”，下载“ShareFile.exe”到任意目录。
- 
+ ![Screenshot](sharefile.files/image001.png)
 2、双击运行“ShareFile.exe”，等待滚屏结束。
- 
+  ![Screenshot](sharefile.files/image003.png)
 3、根据提示输入想要使用的网络链接序号后回车。
- 
+  ![Screenshot](sharefile.files/image005.png)
 4、提示输入端口时，建议直接回车使用默认设置。
- 
+  ![Screenshot](sharefile.files/image007.png)
 5、出现下面窗口说明程序安装成功，按回车退出程序。
- 
+  ![Screenshot](sharefile.files/image009.png)
 （二）、分享文件
+
 1、分享单个文件
 （1）、在要分享的文件上点击右键，选择“分享此文件”。
  
