@@ -74,29 +74,42 @@ Only supported on Windows operating systems. Verified successfully on Windows 7 
 
 （1）、打开“命令提示符”（cmd）或通过Win+R组合键打开“运行”
 
-   ![Screenshot](sharefile.files/image026.png)
+   ![Screenshot](sharefile.files/image028.png)
+    ![Screenshot](sharefile.files/image030.png)
    
 （2）、在命令提示符或运行对话框输入程序完整路径（路径中有空格需要添加英文引号） 空格 文件路径 空格 文件路径……
 如："E:\sharefile.exe" "C:\Users\Administrator\Desktop\swzs.py" "D:\MiniSQL2K.rar" "F:\WYWZ\config.ini"
 
-  ![Screenshot](sharefile.files/image030.png)
+  ![Screenshot](sharefile.files/image032.png)
+   ![Screenshot](sharefile.files/image034.png)
  
 （3）、回车确认命令并等待滚屏结束。
 
+ ![Screenshot](sharefile.files/image014.png)
+ 
 （4）、参数中添加的文件会被自动打包并生成下载链接，链接会自动复制到剪贴板，分享此链接，即可通过浏览器访问下载打包后的文件。
 
-  ![Screenshot](sharefile.files/image032.png)
+  ![Screenshot](sharefile.files/image036.png)
   
 （三）、接收文件
 
 1、如需接收文件至某目录，可打开此目录后在目录空白处点击右键，选择“接收文件至此目录”。或在要接收目录的文件夹上点击右键，选择“接收文件至此目录”。
-  
+
+   ![Screenshot](sharefile.files/image038.png)
+    ![Screenshot](sharefile.files/image040.png)
+    
 2、等待滚屏结束。
-3、形成一个文件接收链接并自动复制到剪贴板。将此链接发送给需要发送文件的人员。
+
+ ![Screenshot](sharefile.files/image014.png)
  
+3、形成一个文件接收链接并自动复制到剪贴板。将此链接发送给需要发送文件的人员。
+
+  ![Screenshot](sharefile.files/image042.png)
+   ![Screenshot](sharefile.files/image044.png)
  
 4、需要传输文件的人员拿到链接后通过谷歌浏览器访问，即可进行文件上传操作。
- 
+
+  ![Screenshot](sharefile.files/image046.png)
 
 
 
