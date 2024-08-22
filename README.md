@@ -64,28 +64,28 @@ Only supported on Windows operating systems. Verified successfully on Windows 7 
   
 （2）、等待滚屏结束。
 
-  ![Screenshot](sharefile.files/image025.png)
+  ![Screenshot](sharefile.files/image025.jpg)
   
 （3）、文件夹会被自动打包，并形成一个下载链接并自动复制到剪贴板，将此链接分享给其他人，通过浏览器访问此链接就可下载打包后的文件。
 
-  ![Screenshot](sharefile.files/image027.png)
+  ![Screenshot](sharefile.files/image026.png)
   
 3、分享多个文件（需通过命令行操作）
 
 （1）、打开“命令提示符”（cmd）或通过Win+R组合键打开“运行”
 
-   ![Screenshot](sharefile.files/image029.png)
+   ![Screenshot](sharefile.files/image026.png)
    
 （2）、在命令提示符或运行对话框输入程序完整路径（路径中有空格需要添加英文引号） 空格 文件路径 空格 文件路径……
 如："E:\sharefile.exe" "C:\Users\Administrator\Desktop\swzs.py" "D:\MiniSQL2K.rar" "F:\WYWZ\config.ini"
 
-  ![Screenshot](sharefile.files/image031.png)
+  ![Screenshot](sharefile.files/image030.png)
  
 （3）、回车确认命令并等待滚屏结束。
 
 （4）、参数中添加的文件会被自动打包并生成下载链接，链接会自动复制到剪贴板，分享此链接，即可通过浏览器访问下载打包后的文件。
 
-  ![Screenshot](sharefile.files/image033.png)
+  ![Screenshot](sharefile.files/image032.png)
   
 （三）、接收文件
 
