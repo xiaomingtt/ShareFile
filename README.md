@@ -7,7 +7,7 @@ Only supported on Windows operating systems. Verified successfully on Windows 7 
 
 
 （一）、安装
-1、浏览器访问“https://github.com/xiaomingtt/ShareFile/releases”，下载“ShareFile.exe”到任意目录。
+1、浏览器访问“ https://github.com/xiaomingtt/ShareFile/releases ”，下载“ShareFile.exe”到任意目录。
  
 2、双击运行“ShareFile.exe”，等待滚屏结束。
  
