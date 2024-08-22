@@ -1,0 +1,1 @@
+只支持Windows操作系统。再windows7x86、x64和windows10x64验证成功。
