@@ -1,26 +1,26 @@
 # -*- coding: utf-8 -*-
 
-from flask import Flask, send_from_directory, request, jsonify #Flask==3.0.0
+from flask import Flask, send_from_directory, request, jsonify, render_template_string #Flask==3.0.0
 import os
 import sys
 import random
-import pyperclip                                               #pyperclip==1.8.2
+import pyperclip                                                                       #pyperclip==1.8.2
 import winreg
 import socket
-import psutil                                                  #psutil==5.9.6
+import psutil                                                                     #psutil==5.9.6
 import time
 import threading 
 import tkinter as tk 
 from tkinter import filedialog
-from PIL import ImageTk, Image, ImageDraw, ImageFont           #Pillow==9.2.0
-import qrcode                                                  #qrcode==7.4.2
-from colorama import init, Fore, Back, Style                   #colorama==0.4.6
+from PIL import ImageTk, Image, ImageDraw, ImageFont                             #Pillow==9.2.0
+import qrcode                                                                      #qrcode==7.4.2
+from colorama import init, Fore, Back, Style                                     #colorama==0.4.6
 from datetime import datetime
 import shutil
 import logging
 import zipfile
 import tempfile
-import pythoncom                                               #pywin32==300
+import pythoncom                                                                    #pywin32==300
 from win32com.shell import shell, shellcon
 
 CLSID_ShellLink = shell.CLSID_ShellLink
@@ -31,6 +31,8 @@ def start_flask_server(p, fol, cip):
     app.config["UPLOAD_FOLDER"] = fol
     app.config["UPLOAD_TEMP_FOLDER"] = fol
     app.config['MAX_CONTENT_LENGTH'] = 32 * 1024 * 1024 * 1024
+    
+    EXCLUDED_DIRS = {'System Volume Information', '$RECYCLE.BIN', 'RECYCLER', '$Recycle.Bin', 'Recovery'}
     
     logging.getLogger("werkzeug").disabled = True
     
@@ -59,7 +61,74 @@ def start_flask_server(p, fol, cip):
     @app.route('/receivefile')
     def receivefile():
         return '''<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>文件上传</title><style> body{padding:0;margin:0;}.file-upload {width: calc(98vw - 12px);padding: 5px;border: 1px solid #999;border-radius: 5px;text-align: center;margin:10px auto;}.button-63 {align-items: center;background-image: linear-gradient(144deg,#AF40FF, #5B42F3 50%,#00DDEB);border: 0;border-radius: 8px;box-shadow: rgba(151, 65, 252, 0.2) 0 15px 30px -5px;box-sizing: border-box;color: #FFFFFF;display: flex;font-family: Phantomsans, sans-serif;font-size: 20px;justify-content: center;line-height: 1em;max-width: 100%;min-width: 140px;padding: 19px 24px;text-decoration: none;user-select: none;-webkit-user-select: none;touch-action: manipulation;white-space: nowrap;cursor: pointer;margin-left: auto;margin-right: auto;}.button-63:active, .button-63:hover {outline: 0;}@media (min-width: 768px) {.button-63 {font-size: 24px;min-width: 196px;}}.file {position: relative;display: inline-block;background: #D0EEFF;border: 1px solid #99D3F5;border-radius: 4px;padding: 4px 12px;overflow: hidden;color: #1E88C7;text-decoration: none;text-indent: 0;line-height: 20px;}.file input {position: absolute;font-size: 100px;right: 0;top: 0;opacity: 0;}.file:hover {background: #AADFFD;border-color: #78C3F3;color: #004974;text-decoration: none;}.progress-bar-container {width: 100%;height: 20px;border: 1px solid #ccc;border-radius: 5px;overflow: hidden;margin-top: 10px;}.progress-bar {height: 100%;width: 0;background-color: #4CAF50;transition: width 0.3s ease-in-out;}.file-list {text-align: left;margin-top: 10px;}ul {list-style-type: none;margin: 0;padding: 0;}li {background-color: #f2f2f2;border: 1px solid #ddd;margin: 10px 0;padding: 10px;height:20px;}li span{float:left;}li button{float:right;}</style></head><body><div class="file-upload"><div id="progressContainer" class="progress-bar-container" style="display: none;"><div id="progressBar" class="progress-bar"></div></div><h1>文件上传</h1><a href="javascript:;" class="file">选择文件<input type="file" id="fileInput" multiple></a><h6>或拖拽文件至此</h6><div class="file-list" id="fileList" style="display: none;"><ul id="fileListItems"></ul></div><button class="button-63" role="button" id="uploadButton" style="display: none;">开始上传</button></div><script>document.getElementById("fileInput").addEventListener("change",function(){var e=document.getElementById("fileList"),t=document.getElementById("fileListItems");if(t.innerHTML="",0===this.files.length)return e.style.display="none",void(document.getElementById("uploadButton").style.display="none");for(var n=0;n<this.files.length;n++){var l=document.createElement("li"),a=document.createElement("span");a.innerText=this.files[n].name;var d=document.createElement("button");d.innerText="×",d.classList.add("button-85"),d.setAttribute("data-index",n),d.addEventListener("click",function(){var e=parseInt(this.getAttribute("data-index")),t=Array.from(document.getElementById("fileInput").files);t.splice(e,1);for(var n=new ClipboardEvent("").clipboardData||new DataTransfer,l=0;l<t.length;l++)n.items.add(t[l]);document.getElementById("fileInput").files=n.files,document.getElementById("fileInput").dispatchEvent(new Event("change"))}),l.appendChild(a),l.appendChild(d),t.appendChild(l)}e.style.display="block",document.getElementById("uploadButton").style.display="block"});var fileUploadArea=document.querySelector(".file-upload");fileUploadArea.addEventListener("dragover",function(e){e.preventDefault(),this.classList.add("dragover")}),fileUploadArea.addEventListener("dragleave",function(){this.classList.remove("dragover")}),fileUploadArea.addEventListener("drop",function(e){e.preventDefault(),this.classList.remove("dragover");var t=e.dataTransfer.files,n=document.getElementById("fileListItems");if(n.innerHTML="",0===t.length)return document.getElementById("fileList").style.display="none",void(document.getElementById("uploadButton").style.display="none");for(var l=0;l<t.length;l++){var a=document.createElement("li"),d=document.createElement("span");d.innerText=t[l].name;var i=document.createElement("button");i.innerText="×",i.classList.add("button-85"),i.setAttribute("data-index",l),i.addEventListener("click",function(){var e=parseInt(this.getAttribute("data-index")),t=Array.from(document.getElementById("fileInput").files);t.splice(e,1);for(var n=new ClipboardEvent("").clipboardData||new DataTransfer,l=0;l<t.length;l++)n.items.add(t[l]);document.getElementById("fileInput").files=n.files,document.getElementById("fileInput").dispatchEvent(new Event("change"))}),a.appendChild(d),a.appendChild(i),n.appendChild(a)}document.getElementById("fileList").style.display="block",document.getElementById("uploadButton").style.display="block",document.getElementById("fileInput").files=t}),document.getElementById("uploadButton").addEventListener("click",function(){this.style.display="none";for(var e=document.getElementsByClassName("button-85"),t=0;t<e.length;t++){e[t].style.display="none"}var n=document.getElementById("fileInput").files;if(0!==n.length){var l=new XMLHttpRequest,a=document.getElementById("progressContainer"),d=document.getElementById("progressBar");l.upload.addEventListener("progress",function(e){var t=e.loaded/e.total*100;d.style.width=t.toFixed(2)+"%"}),l.onreadystatechange=function(){if(l.readyState===XMLHttpRequest.DONE){if(200===l.status){var e=JSON.parse(l.responseText);console.log(e),d.style.width="0%";for(var t="",n=0;n<e.length;n++){if("success"===e[n].status)var i=e[n].filename+'<span style="color:#0f0;">上传成功</span>';else i=e[n].filename+'<span style="color:#f00;">上传失败</span>';t=t+"<li>"+i+"</li>"}}else alert("上传失败");a.style.display="none",fileListItems.innerHTML=t}},a.style.display="block",l.open("POST","/upload",!0);for(var i=new FormData,s=0;s<n.length;s++)i.append("file",n[s]);l.send(i)}else alert("未选择文件")});</script></body></html>'''
+    
+    @app.route('/list', defaults={'req_path': ''})
+    @app.route('/list/<path:req_path>')
+    def showlist(req_path):
+        abs_path = os.path.join(fol, req_path)
 
+        if not os.path.exists(abs_path):
+            return "文件不存在", 404
+
+        if os.path.isfile(abs_path):
+            global istruerun
+            global clients
+            global sflj
+            istruerun = True 
+            sflj = 1 
+            client_ip = request.remote_addr
+            clients.append(client_ip)
+            formatted_time = getnowtime()
+            print(Back.WHITE + Fore.GREEN + "\n有新用户接入：{}".format(client_ip) + Style.RESET_ALL, formatted_time)
+            print(Fore.YELLOW + "用户{}下载文件：{}".format(client_ip, abs_path) + Style.RESET_ALL)
+            return send_from_directory(os.path.dirname(abs_path), os.path.basename(abs_path), as_attachment=True)
+
+        files = os.listdir(abs_path)
+        file_list = []
+
+        for file_name in files:
+            if file_name in EXCLUDED_DIRS:
+                continue 
+            try:
+                file_path = os.path.join(req_path, file_name)
+                abs_file_path = os.path.join(abs_path, file_name)
+                mod_datetime = datetime.fromtimestamp(os.path.getmtime(abs_file_path))
+                last_modified_time = mod_datetime.strftime("%Y-%m-%d %H:%M")
+                            
+                if os.path.isdir(abs_file_path):
+                    file_list.append({
+                        'name': file_name ,
+                        'path': file_path,
+                        'last_modified': last_modified_time,
+                        'type': 'directory'
+                    })
+                else:
+                    size = os.path.getsize(abs_file_path)
+                    
+                    if size < 1024:
+                        size = '%i' % size + ' B'
+                    elif 1024 < size <= 1048576:
+                        size = '%.1f' % float(size/1024) + ' KB'
+                    elif 1048576 < size <= 1073741824:
+                        size = '%.1f' % float(size/1048576) + ' MB'
+                    elif 1073741824 < size <= 1099511627776:
+                        size = '%.1f' % float(size/1073741824) + ' GB'
+                        
+                    file_list.append({
+                        'name': file_name,
+                        'path': file_path,
+                        'size': size,
+                        'last_modified': last_modified_time,
+                        'type': 'file'
+                    })
+            except (PermissionError, FileNotFoundError, OSError) as e:
+                print(f"无法获取文件信息 {abs_file_path}: {e}")
+                continue
+                
+        html_content = '''<!DOCTYPE html><html lang="cn"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ShareFile</title><style>body{font-family:Arial,sans-serif;margin:0;padding:5px 20px;background-color:#f4f4f4;color:#333}h2{text-align:center;margin-bottom:0px}.directory-container{display:flex;align-items:center;font-size:18px;margin-bottom:10px}.current-path{margin-right:20px}.to-lastPath{background-color:#3498db;color:#fff;border:none;padding:8px 12px;font-size:16px;border-radius:5px;cursor:pointer;margin-left:10px;display:inline-block}.to-lastPath:hover{background-color:#2980b9}.table-container{width:100%;overflow-x:auto}.files-table{width:100%;border-collapse:collapse;margin-top:20px;background-color:#fff;box-shadow:0 4px 8px rgba(0,0,0,.1);min-width:600px}.files-table td,.files-table th{padding:12px 15px;border:1px solid #ddd;text-align:left;white-space:nowrap}.files-table th{background-color:#3498db;color:#fff;text-transform:uppercase;font-size:14px}.files-table td a{text-decoration:none;color:#3498db;font-weight:700}.files-table td a:hover{text-decoration:underline}.files-table td{font-size:16px}@media (max-width:768px){.files-table{min-width:100%}.directory-container{flex-direction:column;align-items:flex-start}}</style></head><body><h2>ShareFile</h2><div class="directory-container"><p class="current-path">当前目录: {% if current_path %}根目录\\{{ current_path }}{% else %} 根目录 {% endif %}</p>{% if current_path %} <button class="to-lastPath" onclick="window.history.back()">返回上级</button> {% endif %}</div><div class="table-container"><table class="files-table"><tr><th class="td-name">名称</th><th class="td-size">大小</th><th class="td-ctime">修改日期</th></tr>{% for file in files %}<tr><td data-label="名称"><a href="{{ url_for('showlist', req_path=file.path) }}">{{ file.name }}</a></td><td data-label="大小">{% if file.size %} <span>{{ file.size }}</span> {% else %} 文件夹 {% endif %}</td><td data-label="修改日期">{{ file.last_modified }}</td></tr>{% endfor %}</table></div></body></html>'''
+        file_list = sorted(file_list, key=lambda x: (x['type'] == 'file', x['name'].lower()))
+        return render_template_string(html_content, files=file_list, current_path=req_path)
+    
     @app.route('/upload', methods=['POST'])
     def upload():
         global istruerun
@@ -253,8 +322,12 @@ def write_registry_entry(epath, ico, cip, port): #将配置信息写入注册表
     entries = [
         (r"*\shell\Share File", "分享此文件", epath + ' S "%1"'),
         (r"Directory\shell\Share File", "打包分享此文件夹", epath + ' S "%1"'),
+        (r"Directory\shell\Share List", "列表分享此文件夹", epath + ' F "%1"'),
         (r"Directory\shell\Receive File", "接收文件至此目录", epath + ' R "%1"'),
-        (r"Directory\Background\shell\Receive File", "接收文件至此目录", epath + ' R "%v"')
+        (r"Drive\shell\Receive File", "接收文件至此磁盘", epath + ' R "%1"'),
+        (r"Drive\shell\Share List", "列表分享此磁盘", epath + ' F "%1"'),
+        (r"Directory\Background\shell\Receive File", "接收文件至此目录", epath + ' R "%v"'),
+        (r"Directory\Background\shell\Share List", "列表分享此目录", epath + ' F "%v"')
     ]
     for reg_path, name, command in entries:
         key = winreg.CreateKey(winreg.HKEY_CLASSES_ROOT, reg_path)
@@ -652,6 +725,30 @@ if __name__ == '__main__':
                 print("网络接口" + str(index + 1) + "（" + ips[index]['name'] + "）：" + Back.GREEN + Fore.WHITE + url + Style.RESET_ALL)
                 print("\n")
             print(Back.BLUE + Fore.WHITE + "↑↑文件上传地址（最后一条已复制到剪贴板）↑↑\n" + Style.RESET_ALL)
+    elif args[1] == "F":  #-------------测试部分-----------------------------------------------------------
+        print("列表分享")
+        qrcode_data = []
+        path = args[2]
+        path = path.strip('"')
+        if not path.endswith(os.path.sep):
+            path += os.path.sep
+        if isinstance(ip, str):
+            url = "http://" + ip + ":" + str(port) + "/list"
+            pyperclip.copy(url)
+            qrcode_data.append(url)
+            print(Back.BLUE + Fore.WHITE + "\n↓↓文件分享地址已复制到剪贴板↓↓\n" + Style.RESET_ALL)
+            print(Back.GREEN + Fore.WHITE + url + Style.RESET_ALL)
+            print(Back.BLUE + Fore.WHITE + "\n↑↑文件分享地址已复制到剪贴板↑↑\n" + Style.RESET_ALL)
+        elif isinstance(ip, list):
+            print(Back.BLUE + Fore.WHITE + "\n↓↓文件分享地址↓↓\n" + Style.RESET_ALL)
+            for index, pp in enumerate(ip):
+                url = "http://" + pp + ":" + str(port) + "/list"
+                pyperclip.copy(url)
+                qrcode_data.append(url)
+                print("网络接口" + str(index + 1) + "（" + ips[index]['name'] + "）：" + Back.GREEN + Fore.WHITE + url + Style.RESET_ALL)
+                print("\n")
+            print(Back.BLUE + Fore.WHITE + "↑↑文件分享地址（最后一条已复制到剪贴板）↑↑\n" + Style.RESET_ALL)
+        
     else:
         arguments = sys.argv[1:]
         
