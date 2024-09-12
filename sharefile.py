@@ -34,7 +34,7 @@ def start_flask_server(p, fol, cip):
     
     EXCLUDED_DIRS = {'System Volume Information', '$RECYCLE.BIN', 'RECYCLER', '$Recycle.Bin', 'Recovery'}
     
-    logging.getLogger("werkzeug").disabled = True
+    logging.getLogger("werkzeug").disabled = True #将 Werkzeug 的日志记录器设置为禁用状态
     
     @app.before_request
     def check_auth():
@@ -598,8 +598,12 @@ def uninstall_app():#卸载，删除添加的右键菜单和创建的快捷方�
     reg_paths = [
         r"*\shell\Share File",
         r"Directory\shell\Share File",
-        r"Folder\shell\Receive File",
-        r"Directory\Background\shell\Receive File"
+        r"Directory\shell\Share List",
+        r"Directory\shell\Receive File",
+        r"Drive\shell\Receive File",
+        r"Drive\shell\Share List",
+        r"Directory\Background\shell\Receive File",
+        r"Directory\Background\shell\Share List"
     ]
     for reg_path in reg_paths:
         try:
@@ -703,7 +707,7 @@ if __name__ == '__main__':
         filename = os.path.basename(file) #
         
         qrcode_data = show_info(ip, port, path, filename, ips) #显示下载地址，并返回下载地址待生成二维码
-    elif args[1] == "R":
+    elif args[1] == "R": #接收文件
         qrcode_data = []
         path = args[2]
         path = path.strip('"')
@@ -725,8 +729,7 @@ if __name__ == '__main__':
                 print("网络接口" + str(index + 1) + "（" + ips[index]['name'] + "）：" + Back.GREEN + Fore.WHITE + url + Style.RESET_ALL)
                 print("\n")
             print(Back.BLUE + Fore.WHITE + "↑↑文件上传地址（最后一条已复制到剪贴板）↑↑\n" + Style.RESET_ALL)
-    elif args[1] == "F":  #-------------测试部分-----------------------------------------------------------
-        print("列表分享")
+    elif args[1] == "F":   #列表分享文件
         qrcode_data = []
         path = args[2]
         path = path.strip('"')
