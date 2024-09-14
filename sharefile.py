@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from flask import Flask, send_from_directory, request, jsonify, render_template_string #Flask==3.0.0
+from flask import Flask, send_from_directory, request, jsonify, render_template_string, abort #Flask==3.0.0
 import os
 import sys
 import random
@@ -68,7 +68,8 @@ def start_flask_server(p, fol, cip):
         abs_path = os.path.join(fol, req_path)
 
         if not os.path.exists(abs_path):
-            return "文件不存在", 404
+            abort(404)
+            #return "文件不存在", 404
 
         if os.path.isfile(abs_path):
             global istruerun
@@ -174,7 +175,8 @@ def start_flask_server(p, fol, cip):
         print(Back.WHITE + Fore.GREEN + "\n有新用户接入：{}".format(client_ip) + Style.RESET_ALL, formatted_time)
         file_path = os.path.join(fol, filename)
         if not os.path.exists(file_path):
-            return "文件不存在", 404
+            #return "文件不存在", 404
+            abort(404)
         print(Fore.YELLOW + "用户{}下载文件：{}".format(client_ip, file_path) + Style.RESET_ALL)
         return send_from_directory(fol, filename, as_attachment=True, conditional=True)
          
