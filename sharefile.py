@@ -22,6 +22,7 @@ import zipfile
 import tempfile
 import pythoncom                                                                    #pywin32==300
 from win32com.shell import shell, shellcon
+from pypinyin import lazy_pinyin, Style as PinyinStyle                                               #pypinyin==0.53.0                                 
 
 CLSID_ShellLink = shell.CLSID_ShellLink
 IID_IShellLink = shell.IID_IShellLink
@@ -61,7 +62,26 @@ def start_flask_server(p, fol, cip):
     @app.route('/receivefile')
     def receivefile():
         return '''<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>文件上传</title><style> body{padding:0;margin:0;}.file-upload {width: calc(98vw - 12px);padding: 5px;border: 1px solid #999;border-radius: 5px;text-align: center;margin:10px auto;}.button-63 {align-items: center;background-image: linear-gradient(144deg,#AF40FF, #5B42F3 50%,#00DDEB);border: 0;border-radius: 8px;box-shadow: rgba(151, 65, 252, 0.2) 0 15px 30px -5px;box-sizing: border-box;color: #FFFFFF;display: flex;font-family: Phantomsans, sans-serif;font-size: 20px;justify-content: center;line-height: 1em;max-width: 100%;min-width: 140px;padding: 19px 24px;text-decoration: none;user-select: none;-webkit-user-select: none;touch-action: manipulation;white-space: nowrap;cursor: pointer;margin-left: auto;margin-right: auto;}.button-63:active, .button-63:hover {outline: 0;}@media (min-width: 768px) {.button-63 {font-size: 24px;min-width: 196px;}}.file {position: relative;display: inline-block;background: #D0EEFF;border: 1px solid #99D3F5;border-radius: 4px;padding: 4px 12px;overflow: hidden;color: #1E88C7;text-decoration: none;text-indent: 0;line-height: 20px;}.file input {position: absolute;font-size: 100px;right: 0;top: 0;opacity: 0;}.file:hover {background: #AADFFD;border-color: #78C3F3;color: #004974;text-decoration: none;}.progress-bar-container {width: 100%;height: 20px;border: 1px solid #ccc;border-radius: 5px;overflow: hidden;margin-top: 10px;}.progress-bar {height: 100%;width: 0;background-color: #4CAF50;transition: width 0.3s ease-in-out;}.file-list {text-align: left;margin-top: 10px;}ul {list-style-type: none;margin: 0;padding: 0;}li {background-color: #f2f2f2;border: 1px solid #ddd;margin: 10px 0;padding: 10px;height:20px;}li span{float:left;}li button{float:right;}</style></head><body><div class="file-upload"><div id="progressContainer" class="progress-bar-container" style="display: none;"><div id="progressBar" class="progress-bar"></div></div><h1>文件上传</h1><a href="javascript:;" class="file">选择文件<input type="file" id="fileInput" multiple></a><h6>或拖拽文件至此</h6><div class="file-list" id="fileList" style="display: none;"><ul id="fileListItems"></ul></div><button class="button-63" role="button" id="uploadButton" style="display: none;">开始上传</button></div><script>document.getElementById("fileInput").addEventListener("change",function(){var e=document.getElementById("fileList"),t=document.getElementById("fileListItems");if(t.innerHTML="",0===this.files.length)return e.style.display="none",void(document.getElementById("uploadButton").style.display="none");for(var n=0;n<this.files.length;n++){var l=document.createElement("li"),a=document.createElement("span");a.innerText=this.files[n].name;var d=document.createElement("button");d.innerText="×",d.classList.add("button-85"),d.setAttribute("data-index",n),d.addEventListener("click",function(){var e=parseInt(this.getAttribute("data-index")),t=Array.from(document.getElementById("fileInput").files);t.splice(e,1);for(var n=new ClipboardEvent("").clipboardData||new DataTransfer,l=0;l<t.length;l++)n.items.add(t[l]);document.getElementById("fileInput").files=n.files,document.getElementById("fileInput").dispatchEvent(new Event("change"))}),l.appendChild(a),l.appendChild(d),t.appendChild(l)}e.style.display="block",document.getElementById("uploadButton").style.display="block"});var fileUploadArea=document.querySelector(".file-upload");fileUploadArea.addEventListener("dragover",function(e){e.preventDefault(),this.classList.add("dragover")}),fileUploadArea.addEventListener("dragleave",function(){this.classList.remove("dragover")}),fileUploadArea.addEventListener("drop",function(e){e.preventDefault(),this.classList.remove("dragover");var t=e.dataTransfer.files,n=document.getElementById("fileListItems");if(n.innerHTML="",0===t.length)return document.getElementById("fileList").style.display="none",void(document.getElementById("uploadButton").style.display="none");for(var l=0;l<t.length;l++){var a=document.createElement("li"),d=document.createElement("span");d.innerText=t[l].name;var i=document.createElement("button");i.innerText="×",i.classList.add("button-85"),i.setAttribute("data-index",l),i.addEventListener("click",function(){var e=parseInt(this.getAttribute("data-index")),t=Array.from(document.getElementById("fileInput").files);t.splice(e,1);for(var n=new ClipboardEvent("").clipboardData||new DataTransfer,l=0;l<t.length;l++)n.items.add(t[l]);document.getElementById("fileInput").files=n.files,document.getElementById("fileInput").dispatchEvent(new Event("change"))}),a.appendChild(d),a.appendChild(i),n.appendChild(a)}document.getElementById("fileList").style.display="block",document.getElementById("uploadButton").style.display="block",document.getElementById("fileInput").files=t}),document.getElementById("uploadButton").addEventListener("click",function(){this.style.display="none";for(var e=document.getElementsByClassName("button-85"),t=0;t<e.length;t++){e[t].style.display="none"}var n=document.getElementById("fileInput").files;if(0!==n.length){var l=new XMLHttpRequest,a=document.getElementById("progressContainer"),d=document.getElementById("progressBar");l.upload.addEventListener("progress",function(e){var t=e.loaded/e.total*100;d.style.width=t.toFixed(2)+"%"}),l.onreadystatechange=function(){if(l.readyState===XMLHttpRequest.DONE){if(200===l.status){var e=JSON.parse(l.responseText);console.log(e),d.style.width="0%";for(var t="",n=0;n<e.length;n++){if("success"===e[n].status)var i=e[n].filename+'<span style="color:#0f0;">上传成功</span>';else i=e[n].filename+'<span style="color:#f00;">上传失败</span>';t=t+"<li>"+i+"</li>"}}else alert("上传失败");a.style.display="none",fileListItems.innerHTML=t}},a.style.display="block",l.open("POST","/upload",!0);for(var i=new FormData,s=0;s<n.length;s++)i.append("file",n[s]);l.send(i)}else alert("未选择文件")});</script></body></html>'''
-    
+
+
+
+    def list_files_with_permissions_check(directory):
+        files = []
+        for entry in os.listdir(directory):
+            abs_path = os.path.join(directory, entry)
+            try:
+                if os.path.isdir(abs_path):  # 检查是否为文件夹
+                    os.listdir(abs_path)  # 尝试读取子目录内容以确认访问权限
+                files.append(entry)
+            except PermissionError:
+                pass
+                #print(f"权限错误: 无法访问 {abs_path}")
+            except Exception as e:
+                pass
+                #print(f"无法访问 {abs_path}: {e}")
+        return files
+
+
     @app.route('/list', defaults={'req_path': ''})
     @app.route('/list/<path:req_path>')
     def showlist(req_path):
@@ -69,7 +89,6 @@ def start_flask_server(p, fol, cip):
 
         if not os.path.exists(abs_path):
             abort(404)
-            #return "文件不存在", 404
 
         if os.path.isfile(abs_path):
             global istruerun
@@ -80,56 +99,140 @@ def start_flask_server(p, fol, cip):
             client_ip = request.remote_addr
             clients.append(client_ip)
             formatted_time = getnowtime()
-            print(Back.WHITE + Fore.GREEN + "\n有新用户接入：{}".format(client_ip) + Style.RESET_ALL, formatted_time)
-            print(Fore.YELLOW + "用户{}下载文件：{}".format(client_ip, abs_path) + Style.RESET_ALL)
+            print(f"\n有新用户接入：{client_ip} {formatted_time}")
+            print(f"用户{client_ip}下载文件：{abs_path}")
             return send_from_directory(os.path.dirname(abs_path), os.path.basename(abs_path), as_attachment=True)
 
-        files = os.listdir(abs_path)
+        # 获取排序参数
+        sort_by = request.args.get('sort', 'name')  # 默认为按名称排序
+        order = request.args.get('order', 'asc')    # 默认为升序
+
+        # 生成新的排序顺序链接
+        reverse_order = 'desc' if order == 'asc' else 'asc'
+
+        # 获取上一级路径
+        parent_dir = os.path.dirname(req_path)
+
+        #files = os.listdir(abs_path)
+        files = list_files_with_permissions_check(abs_path)
         file_list = []
 
         for file_name in files:
             if file_name in EXCLUDED_DIRS:
-                continue 
+                continue
             try:
                 file_path = os.path.join(req_path, file_name)
                 abs_file_path = os.path.join(abs_path, file_name)
                 mod_datetime = datetime.fromtimestamp(os.path.getmtime(abs_file_path))
                 last_modified_time = mod_datetime.strftime("%Y-%m-%d %H:%M")
-                            
+                
                 if os.path.isdir(abs_file_path):
                     file_list.append({
-                        'name': file_name ,
+                        'name': file_name,
                         'path': file_path,
                         'last_modified': last_modified_time,
+                        'size': None,  # 目录没有大小
+                        'size_raw': 0,  # 用于排序
                         'type': 'directory'
                     })
                 else:
-                    size = os.path.getsize(abs_file_path)
+                    size_raw = os.path.getsize(abs_file_path)  # 文件大小以字节为单位
+                    if size_raw < 1024:
+                        size = f'{size_raw} B'
+                    elif 1024 < size_raw <= 1048576:
+                        size = f'{size_raw / 1024:.1f} KB'
+                    elif 1048576 < size_raw <= 1073741824:
+                        size = f'{size_raw / 1048576:.1f} MB'
+                    else:
+                        size = f'{size_raw / 1073741824:.1f} GB'
                     
-                    if size < 1024:
-                        size = '%i' % size + ' B'
-                    elif 1024 < size <= 1048576:
-                        size = '%.1f' % float(size/1024) + ' KB'
-                    elif 1048576 < size <= 1073741824:
-                        size = '%.1f' % float(size/1048576) + ' MB'
-                    elif 1073741824 < size <= 1099511627776:
-                        size = '%.1f' % float(size/1073741824) + ' GB'
-                        
                     file_list.append({
                         'name': file_name,
                         'path': file_path,
                         'size': size,
+                        'size_raw': size_raw,  # 原始大小，用于排序
                         'last_modified': last_modified_time,
                         'type': 'file'
                     })
             except (PermissionError, FileNotFoundError, OSError) as e:
                 print(f"无法获取文件信息 {abs_file_path}: {e}")
                 continue
-                
-        html_content = '''<!DOCTYPE html><html lang="cn"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ShareFile</title><style>body{font-family:Arial,sans-serif;margin:0;padding:5px 20px;background-color:#f4f4f4;color:#333}h2{text-align:center;margin-bottom:0px}.directory-container{display:flex;align-items:center;font-size:18px;margin-bottom:10px}img{margin-right:5px;}.current-path{margin-right:20px}.to-lastPath{background-color:#3498db;color:#fff;border:none;padding:8px 12px;font-size:16px;border-radius:5px;cursor:pointer;margin-left:10px;display:inline-block}.to-lastPath:hover{background-color:#2980b9}.table-container{width:100%;overflow-x:auto}.files-table{width:100%;border-collapse:collapse;margin-top:20px;background-color:#fff;box-shadow:0 4px 8px rgba(0,0,0,.1);min-width:600px}.files-table td,.files-table th{padding:12px 15px;border:1px solid #ddd;text-align:left;white-space:nowrap}.files-table th{background-color:#3498db;color:#fff;text-transform:uppercase;font-size:14px}a{text-decoration:none;color:#3498db;font-weight:700}.files-table td a:hover{text-decoration:none}.files-table td{font-size:16px}@media (max-width:768px){.files-table{min-width:100%}.directory-container{flex-direction:column;align-items:flex-start}}</style></head><body><h2>ShareFile</h2><div class="directory-container"><p class="current-path">当前目录: {% if current_path %}根目录\\{{ current_path }}{% else %} 根目录 {% endif %}</p>{% if current_path %} <button class="to-lastPath" onclick="window.history.back()">返回上级</button> {% endif %}</div><div class="table-container"><table class="files-table"><tr><th class="td-name">名称</th><th class="td-size">大小</th><th class="td-ctime">修改日期</th></tr>{% for file in files %}<tr><td data-label="名称"><a href="{{ url_for('showlist', req_path=file.path) }}">{% if file.type == 'file' %}<img src="data:image/gif;base64,R0lGODlhEAAQALMAAAAAAIAAAACAAICAAAAAgIAAgACAgMDAwICAgP8AAAD/AP//AAAA//8A/wD//////yH5BAEAAA0ALAAAAAAQABAAAAQwsDVEq5V4vs03zVrHIQ+SkaJXYWg6sm5nSm08h3EJ5zrN9zjbLneruYo/JK9oaa4iADs="/>{% else %}<img src="data:image/gif;base64,R0lGODlhEAAQALMAAJF7Cf8A//zOLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAEAAAEALAAAAAAQABAAAAQqMMhJqwQ42wmE/8AWdB+YaWSZqmdWsm9syjJGx/YN6zPv5T4gr0UkikQRADs="/>{% endif %}{{ file.name }}</a></td><td data-label="大小">{% if file.size %} <span>{{ file.size }}</span> {% else %}  {% endif %}</td><td data-label="修改日期">{{ file.last_modified }}</td></tr>{% endfor %}</table></div></body></html>'''
-        file_list = sorted(file_list, key=lambda x: (x['type'] == 'file', x['name'].lower()))
-        return render_template_string(html_content, files=file_list, current_path=req_path)
-    
+
+        # 排序逻辑
+        reverse = (order == 'desc')  # 判断是否为降序
+        
+        if sort_by == 'name':
+            file_list = sorted(file_list,key=lambda x: (x['type'] == 'file', ''.join(lazy_pinyin(x['name'], style=PinyinStyle.NORMAL)).lower()),reverse=reverse)
+            #file_list = sorted(file_list, key=lambda x: (x['type'] == 'file', x['name'].lower()), reverse=reverse)
+        elif sort_by == 'size':
+            file_list = sorted(file_list, key=lambda x: (x['type'] == 'file', x['size_raw']), reverse=reverse)
+        elif sort_by == 'last_modified':
+            file_list = sorted(file_list, key=lambda x: x['last_modified'], reverse=reverse)
+
+        # 修改后的HTML模板，修正表头内容
+        html_content = '''<!DOCTYPE html>
+    <html lang="cn">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1">
+        <title>ShareFile</title>
+        <style>
+            body{font-family:Arial,sans-serif;margin:0;padding:5px 20px;background-color:#f4f4f4;color:#333}
+            h2{text-align:center;margin-bottom:0px}
+            .directory-container{display:flex;align-items:center;font-size:18px;margin-bottom:10px}
+            img{margin-right:5px;}
+            .current-path{margin-right:20px}
+            .to-lastPath{background-color:#3498db;color:#fff;border:none;padding:8px 12px;font-size:16px;border-radius:5px;cursor:pointer;margin-left:10px;display:inline-block}
+            .to-lastPath:hover{background-color:#2980b9}
+            .table-container{width:100%;overflow-x:auto}
+            .files-table{width:100%;border-collapse:collapse;margin-top:20px;background-color:#fff;box-shadow:0 4px 8px rgba(0,0,0,.1);min-width:600px}
+            .files-table td,.files-table th{padding:12px 15px;border:1px solid #ddd;text-align:left;white-space:nowrap}
+            .files-table th{background-color:#3498db;color:#fff;text-transform:uppercase;font-size:14px}
+            .files-table th a{color:#FFF;} /* 为链接设置白色字体颜色 */
+            a{text-decoration:none;color:#3498db;font-weight:700}
+            .files-table td a:hover{text-decoration:none}
+            .files-table td{font-size:16px}
+            @media (max-width:768px){.files-table{min-width:100%}.directory-container{flex-direction:column;align-items:flex-start}}
+        </style>
+    </head>
+    <body>
+    <h2>ShareFile</h2>
+    <div class="directory-container">
+        <p class="current-path">当前目录: {% if current_path %}根目录\\{{ current_path }}{% else %} 根目录 {% endif %}</p>
+        {% if current_path %} 
+        <button class="to-lastPath" onclick="window.location.href='{{ url_for('showlist', req_path=parent_dir) }}'">返回上级</button> 
+        {% endif %}
+    </div>
+    <div class="table-container">
+        <table class="files-table">
+            <tr>
+                <!-- 修正的表头 -->
+                <th class="td-name"><a class="sort-link" href="{{ url_for('showlist', req_path=current_path, sort='name', order=reverse_order) }}">名称</a></th>
+                <th class="td-size"><a class="sort-link" href="{{ url_for('showlist', req_path=current_path, sort='size', order=reverse_order) }}">大小</a></th>
+                <th class="td-ctime"><a class="sort-link" href="{{ url_for('showlist', req_path=current_path, sort='last_modified', order=reverse_order) }}">修改日期</a></th>
+            </tr>
+            {% for file in files %}
+            <tr>
+                <td data-label="名称"><a href="{{ url_for('showlist', req_path=file.path) }}">
+                    {% if file.type == 'file' %}
+                        <img src="data:image/gif;base64,R0lGODlhEAAQALMAAAAAAIAAAACAAICAAAAAgIAAgACAgMDAwICAgP8AAAD/AP//AAAA//8A/wD//////yH5BAEAAA0ALAAAAAAQABAAAAQwsDVEq5V4vs03zVrHIQ+SkaJXYWg6sm5nSm08h3EJ5zrN9zjbLneruYo/JK9oaa4iADs="/>
+                    {% else %}
+                        <img src="data:image/gif;base64,R0lGODlhEAAQALMAAJF7Cf8A//zOLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAEAAAEALAAAAAAQABAAAAQqMMhJqwQ42wmE/8AWdB+YaWSZqmdWsm9syjJGx/YN6zPv5T4gr0UkikQRADs="/>
+                    {% endif %}
+                    {{ file.name }}
+                </a></td>
+                <td data-label="大小">{% if file.size %} <span>{{ file.size }}</span> {% else %}  {% endif %}</td>
+                <td data-label="修改日期">{{ file.last_modified }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    </body>
+    </html>'''
+
+        return render_template_string(html_content, files=file_list, current_path=req_path, reverse_order=reverse_order, parent_dir=parent_dir) 
+            
+        
     @app.route('/upload', methods=['POST'])
     def upload():
         global istruerun
