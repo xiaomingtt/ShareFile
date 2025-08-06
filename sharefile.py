@@ -27,6 +27,25 @@ from pypinyin import lazy_pinyin, Style as PinyinStyle                          
 CLSID_ShellLink = shell.CLSID_ShellLink
 IID_IShellLink = shell.IID_IShellLink
 
+# 自定义临时目录
+custom_temp_dir = r"D:\flask_temp"
+try:
+    # 尝试创建目录（如果已存在则忽略）
+    os.makedirs(custom_temp_dir, exist_ok=True)
+    # 判断是否真的可写（避免只创建了只读目录）
+    test_file = os.path.join(custom_temp_dir, 'test.tmp')
+    with open(test_file, 'w') as f:
+        f.write('test')
+    os.remove(test_file)  # 删除测试文件
+    # 如果一切正常，设置临时缓存目录
+    os.environ['TEMP'] = custom_temp_dir
+    os.environ['TMP'] = custom_temp_dir
+    tempfile.tempdir = custom_temp_dir
+    print(f"✅ 成功设置临时目录为：{custom_temp_dir}")
+except Exception as e:
+    print(f"⚠️ 设置自定义临时目录失败，继续使用系统默认缓存目录。\n错误信息：{e}")
+
+
 def start_flask_server(p, fol, cip):
     app = Flask(__name__)
     app.config["UPLOAD_FOLDER"] = fol
@@ -600,11 +619,14 @@ def sys_init(arg):
 def qr_code_thread(url):
     show_qr_code(url)
 
-def user_colse(tempfile):
+def user_colse():
     print("\n程序将退出")
     time.sleep(3)
-    if os.path.exists(tempfile):
-        os.remove(tempfile)
+    if os.path.exists(custom_temp_dir):
+        try:
+            shutil.rmtree(custom_temp_dir)
+        except Exception as e:
+            print(f"❌ 删除失败：{e}")
     os._exit(0)
 
 def zip_files(paths, zipfilename):
@@ -847,10 +869,10 @@ if __name__ == '__main__':
         while True:
             zt = get_port_connections(port)
             if istruerun and zt and str(autoexit) == "1":
-                user_colse(zip_file)
+                user_colse()
             time.sleep(3)
     except KeyboardInterrupt:
-        user_colse(zip_file)
+        user_colse()
     except SystemExit:
-        user_colse(zip_file)
+        user_colse()
         
